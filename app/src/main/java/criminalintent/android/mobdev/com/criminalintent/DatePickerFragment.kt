@@ -1,7 +1,10 @@
 package criminalintent.android.mobdev.com.criminalintent
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
@@ -13,6 +16,7 @@ class DatePickerFragment : DialogFragment() {
 
     private val ARG_DATE = "date"
     private var mDatePicker: DatePicker? = null
+    val EXTRA_DATE = "criminalintent.android.mobdev.com.criminalintent.date"
 
     fun newInstance(date: Date): DatePickerFragment {
         val args = Bundle()
@@ -39,7 +43,24 @@ class DatePickerFragment : DialogFragment() {
         return AlertDialog.Builder(activity)
             .setView(v)
             .setTitle(R.string.date_picker_title)
-            .setPositiveButton(android.R.string.ok, null)
+            .setPositiveButton(
+                android.R.string.ok
+            ) { _, _ ->
+                val date = GregorianCalendar(mDatePicker?.year ?: 0,
+                    mDatePicker?.month ?: 0,
+                    mDatePicker?.dayOfMonth ?: 0).time
+                sendResult(Activity.RESULT_OK, date)
+            }
             .create()
+    }
+
+    fun sendResult(resultCode: Int, date: Date) {
+
+        if (targetFragment == null) {
+            return
+        }
+        val intent = Intent()
+        intent.putExtra(EXTRA_DATE, date)
+        targetFragment?.onActivityResult(targetRequestCode, resultCode, intent)
     }
 }

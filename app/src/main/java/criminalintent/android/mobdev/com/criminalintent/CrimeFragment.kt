@@ -1,6 +1,8 @@
 package criminalintent.android.mobdev.com.criminalintent
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -12,6 +14,9 @@ import android.text.TextWatcher
 import android.widget.Button
 import android.widget.CheckBox
 import java.util.*
+import android.R.attr.data
+
+
 
 
 class CrimeFragment : Fragment() {
@@ -59,7 +64,7 @@ class CrimeFragment : Fragment() {
             }
         })
         mDateButton = v.findViewById(R.id.crime_date)
-        mDateButton?.text = mCrime?.mDate.toString()
+        updateDate()
         mDateButton?.setOnClickListener {
             val manager = fragmentManager
             val dialog = DatePickerFragment().newInstance(mCrime.mDate)
@@ -71,5 +76,20 @@ class CrimeFragment : Fragment() {
         mSolvedCheckBox?.isChecked = mCrime.mSolve
         mSolvedCheckBox?.setOnCheckedChangeListener { buttonView, isChecked -> mCrime?.mSolve = isChecked }
         return v
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode != Activity.RESULT_OK) {
+            return
+        }
+        if (requestCode == REQUEST_DATE) {
+            val date = data?.getSerializableExtra(DatePickerFragment().EXTRA_DATE) as Date
+            mCrime.mDate = date
+            updateDate()
+        }
+    }
+
+    private fun updateDate() {
+        mDateButton?.text = mCrime.mDate.toString()
     }
 }
