@@ -6,17 +6,22 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import android.content.ClipData.newIntent
+import android.content.Intent
 
 
 class CrimeListFragment : Fragment() {
 
     private var mCrimeRecyclerView: RecyclerView? = null
     private var mAdapter: CrimeAdapter? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -33,9 +38,29 @@ class CrimeListFragment : Fragment() {
         updateUI()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater?.inflate(R.menu.fragment_crime_list, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.new_crime -> {
+                val crime = Crime()
+                CrimeLab.get(activity as Context).addCrime(crime)
+                val intent = CrimePagerActivity
+                    .newIntent(activity as Context, crime.mId)
+                startActivity(intent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun updateUI() {
         val crimeLab = activity?.let {
-            CrimeLab.get(it) }
+            CrimeLab.get(it)
+        }
         val crimes = crimeLab?.getCrimes()
         if (mAdapter == null) {
             mAdapter = CrimeAdapter(crimes!!)

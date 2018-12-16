@@ -5,7 +5,7 @@ import java.util.*
 
 class CrimeLab {
 
-    private var mCrimes: List<Crime>? = null
+    private var mCrimes: ArrayList<Crime>? = null
 
     companion object {
         private var sCrimeLab: CrimeLab? = null
@@ -20,12 +20,10 @@ class CrimeLab {
 
     private constructor(context: Context) {
         mCrimes = ArrayList()
-        for (i in 0..99) {
-            val crime = Crime()
-            crime.mTitle = "Crime #$i"
-            crime.mSolve = (i % 2 == 0) // Для каждого второго объекта
-            (mCrimes as ArrayList<Crime>).add(crime)
-        }
+    }
+
+    fun addCrime(c: Crime) {
+        mCrimes?.add(c)
     }
 
     fun getCrimes(): List<Crime>? {
