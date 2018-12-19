@@ -9,14 +9,15 @@ import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
-import android.content.ClipData.newIntent
-import android.content.Intent
+import android.support.v7.app.AppCompatActivity
 
 
 class CrimeListFragment : Fragment() {
 
     private var mCrimeRecyclerView: RecyclerView? = null
     private var mAdapter: CrimeAdapter? = null
+    private var mSubtitleVisible: Boolean = false
+    private val SAVED_SUBTITLE_VISIBLE = "subtitle"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +27,9 @@ class CrimeListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+        if (savedInstanceState != null) {
+            mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE)
+        }
         var view: View = inflater.inflate(R.layout.fragment_crime_list, container, false)
         mCrimeRecyclerView = view.findViewById(R.id.crime_recycler_view)
         mCrimeRecyclerView?.layoutManager = LinearLayoutManager(activity)
@@ -38,9 +42,20 @@ class CrimeListFragment : Fragment() {
         updateUI()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(SAVED_SUBTITLE_VISIBLE, mSubtitleVisible)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater?.inflate(R.menu.fragment_crime_list, menu)
+        val subtitleItem = menu?.findItem(R.id.show_subtitle)
+        if (mSubtitleVisible) {
+            subtitleItem?.setTitle(R.string.hide_subtitle)
+        } else {
+            subtitleItem?.setTitle(R.string.show_subtitle)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -53,8 +68,25 @@ class CrimeListFragment : Fragment() {
                 startActivity(intent)
                 true
             }
+            R.id.show_subtitle -> {
+                mSubtitleVisible = !mSubtitleVisible
+                activity?.invalidateOptionsMenu()
+                updateSubtitle()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun updateSubtitle() {
+        val crimeLab = CrimeLab.get(activity as Context)
+        val crimeCount = crimeLab.getCrimes()?.size
+        var subtitle: String? = getString(R.string.subtitle_format, crimeCount)
+        if (!mSubtitleVisible) {
+            subtitle = null
+        }
+        val activity = activity as AppCompatActivity?
+        activity?.supportActionBar?.subtitle = subtitle
     }
 
     private fun updateUI() {
@@ -68,6 +100,7 @@ class CrimeListFragment : Fragment() {
         } else {
             mAdapter?.notifyDataSetChanged()
         }
+        updateSubtitle()
     }
 
     private inner class CrimeHolder : RecyclerView.ViewHolder, View.OnClickListener {
