@@ -95,9 +95,10 @@ class CrimeListFragment : Fragment() {
         }
         val crimes = crimeLab?.getCrimes()
         if (mAdapter == null) {
-            mAdapter = CrimeAdapter(crimes!!)
+            mAdapter = CrimeAdapter(crimes)
             mCrimeRecyclerView?.adapter = mAdapter
         } else {
+            mAdapter?.setCrimes(crimes)
             mAdapter?.notifyDataSetChanged()
         }
         updateSubtitle()
@@ -139,19 +140,23 @@ class CrimeListFragment : Fragment() {
     }
 
 
-    private inner class CrimeAdapter(private val mCrimes: List<Crime>) : RecyclerView.Adapter<CrimeHolder>() {
+    private inner class CrimeAdapter(private var mCrimes: List<Crime?>?) : RecyclerView.Adapter<CrimeHolder>() {
         override fun getItemCount(): Int {
-            return mCrimes.size
+            return mCrimes?.size ?: 0
         }
 
         override fun onBindViewHolder(holder: CrimeHolder, position: Int) {
-            val crime = mCrimes[position]
-            holder.bind(crime)
+            val crime = mCrimes?.get(position)
+            holder.bind(crime ?: Crime())
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeHolder {
             val layoutInflater = LayoutInflater.from(activity)
             return CrimeHolder(layoutInflater, parent)
+        }
+
+        fun setCrimes(crimes: List<Crime?>?) {
+            mCrimes = crimes
         }
     }
 }

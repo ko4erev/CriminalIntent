@@ -14,10 +14,6 @@ import android.text.TextWatcher
 import android.widget.Button
 import android.widget.CheckBox
 import java.util.*
-import android.R.attr.data
-
-
-
 
 class CrimeFragment : Fragment() {
 
@@ -44,6 +40,11 @@ class CrimeFragment : Fragment() {
         super.onCreate(savedInstanceState)
         val crimeId = arguments?.getSerializable(ARG_CRIME_ID) as UUID
         mCrime = CrimeLab.get(activity as Context).getCrime(crimeId) ?: Crime()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        CrimeLab.get(activity as Context).updateCrime(mCrime)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

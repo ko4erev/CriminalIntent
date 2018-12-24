@@ -14,7 +14,7 @@ import java.util.*
 class CrimePagerActivity : AppCompatActivity() {
 
     private var mViewPager: ViewPager? = null
-    private var mCrimes: List<Crime>? = null
+    private var mCrimes: List<Crime?>? = null
 
     companion object {
         private const val EXTRA_CRIME_ID = "criminalintent.android.mobdev.com.criminalintent.crime_id"
