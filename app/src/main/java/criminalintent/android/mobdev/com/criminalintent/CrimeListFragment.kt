@@ -10,6 +10,7 @@ import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import android.support.v7.app.AppCompatActivity
+import android.widget.Button
 
 
 class CrimeListFragment : Fragment() {

@@ -36,13 +36,15 @@ class CrimeLab {
         mDatabase?.insert(CrimeTable.NAME, null, values)
     }
 
-    fun getCrimes(): List<Crime?>? {
-        val crimes: ArrayList<Crime?>? = null
-        val cursor = queryCrimes(null, null)
+    fun getCrimes(): List<Crime?> {
+        var crimes: ArrayList<Crime?> = ArrayList()
+        var cursor = queryCrimes(null, null)
         cursor.use { cursor ->
             cursor?.moveToFirst()
             while (cursor?.isAfterLast != true) {
-                crimes?.add(cursor?.getCrime())
+                var t = cursor?.getCrime()
+                crimes.add(t)
+                var s = crimes
                 cursor?.moveToNext()
             }
         }
@@ -92,6 +94,7 @@ class CrimeLab {
         values.put(CrimeTable.Cols.TITLE, crime.mTitle)
         values.put(CrimeTable.Cols.DATE, crime.mDate.time)
         values.put(CrimeTable.Cols.SOLVED, if (crime.mSolve) 1 else 0)
+        values.put(CrimeTable.Cols.SUSPECT, crime.mSuspect)
         return values
     }
 }

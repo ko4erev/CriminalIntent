@@ -14,11 +14,13 @@ class CrimeCursorWrapper(cursor: Cursor?) : CursorWrapper(cursor) {
         var title = getString(getColumnIndex(CrimeTable.Cols.TITLE))
         var date = getLong(getColumnIndex(CrimeTable.Cols.DATE))
         var isSolved = getInt(getColumnIndex(CrimeTable.Cols.SOLVED))
+        var suspect = getString(getColumnIndex(CrimeTable.Cols.SUSPECT))
 
         var crime = Crime(UUID.fromString(uuidString))
         crime.mTitle = title
         crime.mDate = Date(date)
         crime.mSolve = isSolved != 0
+        crime.mSuspect = suspect
         return crime
     }
 }
