@@ -9,14 +9,15 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.format.DateFormat
-import android.widget.Button
-import android.widget.CheckBox
 import java.util.*
 import android.provider.ContactsContract
+import android.widget.*
+import android.widget.ImageButton
+
+
 
 
 class CrimeFragment : Fragment() {
@@ -27,6 +28,8 @@ class CrimeFragment : Fragment() {
     private var mSolvedCheckBox: CheckBox? = null
     private var mReportButton: Button? = null
     private var mSuspectButton: Button? = null
+    private var mPhotoButton: ImageButton? = null
+    private var mPhotoView: ImageView? = null
 
     companion object {
         private const val ARG_CRIME_ID = "crime_id"
@@ -106,10 +109,13 @@ class CrimeFragment : Fragment() {
         }
 
         val packageManager = activity?.packageManager
-        if (packageManager?.resolveActivity(pickContact,
-                PackageManager.MATCH_DEFAULT_ONLY) == null) {
+        if (packageManager?.resolveActivity(
+                pickContact, PackageManager.MATCH_DEFAULT_ONLY) == null) {
             mSuspectButton?.isEnabled = false
         }
+
+        mPhotoButton = v.findViewById(R.id.crime_camera) as ImageButton
+        mPhotoView = v.findViewById(R.id.crime_photo) as ImageView
         return v
     }
 
@@ -136,6 +142,7 @@ class CrimeFragment : Fragment() {
                 var suspect = cursor?.getString(0)
                 mCrime.mSuspect = suspect
                 mSuspectButton?.text = suspect
+
             } finally {
                 cursor?.close()
             }

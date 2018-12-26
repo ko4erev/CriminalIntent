@@ -54,7 +54,6 @@ class DatePickerFragment : DialogFragment() {
     }
 
     fun sendResult(resultCode: Int, date: Date) {
-
         if (targetFragment == null) {
             return
         }
