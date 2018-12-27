@@ -20,6 +20,8 @@ import android.support.v4.content.FileProvider
 import android.widget.*
 import android.widget.ImageButton
 import java.io.File
+import android.graphics.Bitmap
+import java.nio.file.Files.exists
 
 
 class CrimeFragment : Fragment() {
@@ -146,6 +148,7 @@ class CrimeFragment : Fragment() {
             startActivityForResult(captureImage, REQUEST_PHOTO);
         }
         mPhotoView = v.findViewById(R.id.crime_photo) as ImageView
+        updatePhotoView()
         return v
     }
 
@@ -176,6 +179,15 @@ class CrimeFragment : Fragment() {
             } finally {
                 cursor?.close()
             }
+        } else if (requestCode == REQUEST_PHOTO) {
+            var uri = mPhotoFile?.let {
+                FileProvider.getUriForFile(
+                    activity as Context,
+                    "criminalintent.android.mobdev.com.criminalintent.fileprovider",
+                    it)
+            }
+            activity?.revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            updatePhotoView()
         }
     }
 
@@ -198,5 +210,18 @@ class CrimeFragment : Fragment() {
             suspect = getString(R.string.crime_report_suspect, suspect)
         }
         return getString(R.string.crime_report, mCrime?.mTitle, dateString, solvedString, suspect)
+    }
+
+    private fun updatePhotoView() {
+        if (mPhotoFile?.exists() == false || mPhotoFile == null) {
+            mPhotoView?.setImageDrawable(null)
+        } else {
+            val bitmap = activity?.let {
+                PictureUtils.getScaledBitmap(
+                    mPhotoFile?.path ?: "", it
+                )
+            }
+            mPhotoView?.setImageBitmap(bitmap)
+        }
     }
 }
