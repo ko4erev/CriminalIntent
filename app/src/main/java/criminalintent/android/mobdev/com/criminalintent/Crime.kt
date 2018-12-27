@@ -13,4 +13,8 @@ class Crime() {
         mId = id
         mDate = Date()
     }
+
+    fun getPhotoFilename(): String {
+        return "IMG_" + mId?.toString() + ".jpg"
+    }
 }

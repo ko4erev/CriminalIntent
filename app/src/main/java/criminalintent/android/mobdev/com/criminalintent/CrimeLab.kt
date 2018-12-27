@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import criminalintent.android.mobdev.com.criminalintent.database.CrimeBaseHelper
 import criminalintent.android.mobdev.com.criminalintent.database.CrimeCursorWrapper
 import criminalintent.android.mobdev.com.criminalintent.database.CrimeDbSchema.CrimeTable
+import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -14,6 +15,7 @@ class CrimeLab {
 
     private var mContext: Context? = null
     private var mDatabase: SQLiteDatabase? = null
+
 
     companion object {
         private var sCrimeLab: CrimeLab? = null
@@ -63,6 +65,11 @@ class CrimeLab {
             cursor?.moveToFirst()
             return cursor?.getCrime()
         }
+    }
+
+    fun getPhotoFile(crime: Crime): File {
+        val filesDir = mContext?.filesDir
+        return File(filesDir, crime.getPhotoFilename())
     }
 
     fun updateCrime(crime: Crime) {
