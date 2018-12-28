@@ -11,7 +11,9 @@ import android.support.v4.app.FragmentStatePagerAdapter
 import java.util.*
 
 
-class CrimePagerActivity : AppCompatActivity() {
+class CrimePagerActivity : AppCompatActivity(), CrimeFragment.Callbacks {
+
+    override fun onCrimeUpdated(crime: Crime) {}
 
     private var mViewPager: ViewPager? = null
     private var mCrimes: List<Crime?>? = null

@@ -22,7 +22,6 @@ import android.widget.ImageButton
 import java.io.File
 
 
-
 class CrimeFragment : Fragment() {
 
     private var mCrime: Crime? = null
@@ -34,6 +33,11 @@ class CrimeFragment : Fragment() {
     private var mSuspectButton: Button? = null
     private var mPhotoButton: ImageButton? = null
     private var mPhotoView: ImageView? = null
+    private var mCallbacks: Callbacks? = null
+
+    interface Callbacks {
+        fun onCrimeUpdated(crime: Crime)
+    }
 
     companion object {
         private const val ARG_CRIME_ID = "crime_id"
@@ -51,6 +55,11 @@ class CrimeFragment : Fragment() {
         }
     }
 
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        mCallbacks = context as Callbacks?
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val crimeId = arguments?.getSerializable(ARG_CRIME_ID) as UUID
@@ -61,6 +70,11 @@ class CrimeFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         mCrime?.let { CrimeLab.get(activity as Context).updateCrime(it) }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mCallbacks = null
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -74,6 +88,7 @@ class CrimeFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 mCrime?.mTitle = s.toString()
+                updateCrime()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -92,7 +107,10 @@ class CrimeFragment : Fragment() {
 
         mSolvedCheckBox = v.findViewById(R.id.crime_solved)
         mSolvedCheckBox?.isChecked = mCrime?.mSolve ?: false
-        mSolvedCheckBox?.setOnCheckedChangeListener { buttonView, isChecked -> mCrime?.mSolve = isChecked }
+        mSolvedCheckBox?.setOnCheckedChangeListener { buttonView, isChecked ->
+            mCrime?.mSolve = isChecked
+            updateCrime()
+        }
 
         mReportButton = v?.findViewById(R.id.crime_report)
         mReportButton?.setOnClickListener {
@@ -158,6 +176,7 @@ class CrimeFragment : Fragment() {
         if (requestCode == REQUEST_DATE) {
             val date = data?.getSerializableExtra(DatePickerFragment().EXTRA_DATE) as Date
             mCrime?.mDate = date
+            updateCrime()
             updateDate()
         } else if (resultCode == REQUEST_CONTACT && data != null) {
             var contactUri = data.data
@@ -173,6 +192,7 @@ class CrimeFragment : Fragment() {
                 cursor?.moveToFirst()
                 var suspect = cursor?.getString(0)
                 mCrime?.mSuspect = suspect
+                updateCrime()
                 mSuspectButton?.text = suspect
 
             } finally {
@@ -187,8 +207,14 @@ class CrimeFragment : Fragment() {
                 )
             }
             activity?.revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            updateCrime()
             updatePhotoView()
         }
+    }
+
+    private fun updateCrime() {
+        mCrime?.let { CrimeLab.get(activity as Context).updateCrime(it) }
+        mCrime?.let { mCallbacks?.onCrimeUpdated(it) }
     }
 
     private fun updateDate() {

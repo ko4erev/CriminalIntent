@@ -103,7 +103,7 @@ class CrimeListFragment : Fragment() {
         activity?.supportActionBar?.subtitle = subtitle
     }
 
-    private fun updateUI() {
+    fun updateUI() {
         val crimeLab = activity?.let {
             CrimeLab.get(it)
         }

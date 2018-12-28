@@ -3,7 +3,7 @@ package criminalintent.android.mobdev.com.criminalintent
 import android.support.v4.app.Fragment
 import android.view.View
 
-class CrimeListActivity : SingleFragmentActivity(), CrimeListFragment.Callbacks {
+class CrimeListActivity : SingleFragmentActivity(), CrimeListFragment.Callbacks, CrimeFragment.Callbacks {
 
     override fun createFragment(): Fragment {
         return CrimeListFragment()
@@ -23,5 +23,12 @@ class CrimeListActivity : SingleFragmentActivity(), CrimeListFragment.Callbacks 
                 .replace(R.id.detail_fragment_container, newDetail)
                 .commit()
         }
+    }
+
+    override fun onCrimeUpdated(crime: Crime) {
+        var listFragment = supportFragmentManager
+            .findFragmentById(R.id.fragment_container) as CrimeListFragment
+        listFragment.updateUI()
+
     }
 }
