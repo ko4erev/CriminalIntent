@@ -10,7 +10,6 @@ import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import android.support.v7.app.AppCompatActivity
-import android.widget.Button
 
 
 class CrimeListFragment : Fragment() {
@@ -18,7 +17,17 @@ class CrimeListFragment : Fragment() {
     private var mCrimeRecyclerView: RecyclerView? = null
     private var mAdapter: CrimeAdapter? = null
     private var mSubtitleVisible: Boolean = false
+    private var mCallbacks: Callbacks? = null
     private val SAVED_SUBTITLE_VISIBLE = "subtitle"
+
+    interface Callbacks {
+        fun onCrimeSelected(crime: Crime)
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        mCallbacks = context as Callbacks?
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +57,11 @@ class CrimeListFragment : Fragment() {
         outState.putBoolean(SAVED_SUBTITLE_VISIBLE, mSubtitleVisible)
     }
 
+    override fun onDetach() {
+        super.onDetach()
+        mCallbacks = null
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater?.inflate(R.menu.fragment_crime_list, menu)
@@ -64,9 +78,8 @@ class CrimeListFragment : Fragment() {
             R.id.new_crime -> {
                 val crime = Crime()
                 CrimeLab.get(activity as Context).addCrime(crime)
-                val intent = CrimePagerActivity
-                    .newIntent(activity as Context, crime.mId)
-                startActivity(intent)
+                updateUI()
+                mCallbacks?.onCrimeSelected(crime)
                 true
             }
             R.id.show_subtitle -> {
@@ -108,14 +121,13 @@ class CrimeListFragment : Fragment() {
     private inner class CrimeHolder : RecyclerView.ViewHolder, View.OnClickListener {
 
         override fun onClick(v: View?) {
-            val intent = CrimePagerActivity.newIntent(activity as Context, mCrime?.mId)
-            startActivity(intent)
+            mCallbacks?.onCrimeSelected(mCrime)
         }
 
         private var mTitleTextView: TextView? = null
         private var mDateTextView: TextView? = null
         private var mSolvedImageView: ImageView? = null
-        private var mCrime: Crime? = null
+        private var mCrime = Crime()
 
         @SuppressLint("WrongViewCast")
         constructor(inflater: LayoutInflater, parent: ViewGroup) : super(

@@ -20,8 +20,7 @@ import android.support.v4.content.FileProvider
 import android.widget.*
 import android.widget.ImageButton
 import java.io.File
-import android.graphics.Bitmap
-import java.nio.file.Files.exists
+
 
 
 class CrimeFragment : Fragment() {
@@ -184,7 +183,8 @@ class CrimeFragment : Fragment() {
                 FileProvider.getUriForFile(
                     activity as Context,
                     "criminalintent.android.mobdev.com.criminalintent.fileprovider",
-                    it)
+                    it
+                )
             }
             activity?.revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             updatePhotoView()
